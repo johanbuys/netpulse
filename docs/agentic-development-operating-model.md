@@ -51,17 +51,37 @@ Verified models include:
 ## Core workflow
 
 1. Q writes a precise implementation plan before coding.
-2. Q creates a branch/worktree for each worker task.
-3. Worker receives a small task with:
+2. Q breaks each phase into small, ordered implementation tasks.
+3. Q creates a branch/worktree for each worker task.
+4. Worker receives exactly one focused task, not the whole phase spec, with:
    - explicit files allowed to change
    - acceptance criteria
    - required tests
    - forbidden scope creep
-4. Worker implements and reports changed files + test results.
-5. Q reviews diff for spec compliance.
-6. Q reviews diff for code quality.
-7. Q runs verification locally.
-8. Only Q commits/pushes/opens PRs unless explicitly delegated.
+   - context excerpted from the phase plan only as needed
+5. Worker implements and reports changed files + test results.
+6. Q reviews diff for spec compliance.
+7. Q reviews diff for code quality.
+8. Q runs verification locally.
+9. Only Q commits/pushes/opens PRs unless explicitly delegated.
+
+## Phase-to-task breakdown rule
+
+A phase is not an executable unit for a worker agent. A phase is a container of tasks.
+
+Before any worker receives code-writing work, Q must produce a task breakdown with:
+
+- `Task ID`: stable identifier, e.g. `P1-T03`.
+- `Title`: one-sentence task name.
+- `Worker model`: initial model choice.
+- `Allowed files`: exact paths the worker may create/modify.
+- `Inputs`: fixtures, docs, prior task outputs, and constraints.
+- `Acceptance criteria`: observable behavior required.
+- `Verification`: exact commands to run and expected results.
+- `Max diff budget`: target maximum changed lines.
+- `Stop conditions`: when the worker should stop and ask/report instead of guessing.
+
+Workers should receive only the task card plus necessary local context, never the full product spec as an invitation to improvise.
 
 ## Anti-slop gates
 
@@ -69,6 +89,8 @@ Verified models include:
 
 Before worker execution:
 
+- Has the phase been broken into task cards?
+- Is this exactly one task, not a whole phase?
 - Is the task small enough?
 - Are file boundaries clear?
 - Are acceptance criteria testable?
