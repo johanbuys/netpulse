@@ -50,6 +50,45 @@ pub struct HealthSnapshot {
     pub reasons: Vec<String>,
 }
 
+pub trait CommandRunner {
+    fn run(&self, program: &str, args: &[&str]) -> Result<String, String>;
+}
+
+pub fn collect_macos_snapshot(
+    runner: &impl CommandRunner,
+    timestamp: &str,
+) -> Result<NetworkSnapshot, String> {
+    let route_output = runner.run("route", &["-n", "get", "default"])?;
+    let route = parse_default_route(&route_output)?;
+    let airport_output = runner.run("system_profiler", &["SPAirPortDataType", "-json"])?;
+    let wifi = parse_system_profiler_airport(&airport_output, &route.interface_name)?;
+
+    Ok(NetworkSnapshot {
+        timestamp: timestamp.to_string(),
+        internet: InternetSnapshot {
+            gateway: ProbeResult {
+                host: route.gateway,
+                avg_ms: None,
+                loss_pct: None,
+                jitter_ms: None,
+            },
+            cloudflare: ProbeResult {
+                host: "1.1.1.1".to_string(),
+                avg_ms: None,
+                loss_pct: None,
+                jitter_ms: None,
+            },
+            dns_ms: None,
+            https_ms: None,
+        },
+        wifi,
+        health: HealthSnapshot {
+            status: "unknown".to_string(),
+            reasons: vec!["command output parsed; active probes not implemented yet".to_string()],
+        },
+    })
+}
+
 /// Return deterministic placeholder data for the phase 1 CLI skeleton.
 ///
 /// This does not inspect the host network. Real macOS collection will be added
