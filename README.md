@@ -14,6 +14,13 @@ Before building UI, prove that we can reliably collect useful Mac-local network 
 - Wi-Fi stats: interface, SSID, BSSID, RSSI, noise, channel, tx rate, PHY mode.
 - Local persistence: JSON samples suitable for a future dashboard.
 
+## Product and handoff docs
+
+- `docs/product-requirements.md` — full PRD: users, goals, non-goals, requirements, milestones, open decisions.
+- `docs/technical-specification.md` — architecture, data collection, model, UI/backend boundaries, testing strategy.
+- `docs/development-plan.md` — phased roadmap and task-by-task handoff plan.
+- `docs/agentic-development-operating-model.md` — how AI worker agents should be used safely.
+
 ## Planned stack
 
 - Tauri 2
